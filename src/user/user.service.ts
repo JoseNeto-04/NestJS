@@ -1,4 +1,4 @@
-import { Body, Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
@@ -9,15 +9,15 @@ export class UserService {
 
     constructor(private readonly prisma: PrismaService) {}
 
-async create(data:CreateUserDTO) {
-
+async create(data: CreateUserDTO) {
     return this.prisma.user.create({
-
-        data,
-    
-    });
-
+        data: {
+        ...data,
+        birthAt: data.birthAt ? new Date(data.birthAt) : null,
+    },
+  });
 }
+
 
 async list() {
 
@@ -27,6 +27,8 @@ async list() {
 
 async show(id: number) {
 
+        await this.exists(id)
+    
     return this.prisma.user.findUnique({
         where: {
             id
@@ -36,47 +38,65 @@ async show(id: number) {
 
 }
 
-async update(id: number, {email, name, password}: UpdatePutUserDTO) {
-    console.log({email, name, password})
+async update(id: number, data: UpdatePutUserDTO) {
 
-    if(email === undefined) {
-
-        email = '';
-
-    }
-       
+        await this.exists(id)
 
     return this.prisma.user.update({
-        data:{
-
-            name,
-            email,
-            password
-
+        data: {
+        ...data,
+        birthAt: data.birthAt ? new Date(data.birthAt) : null,
         },
         where: {
-
-            id
-        }
-
-    })
-
+        id,
+        },
+    });
 }
 
 async updatePartial(id: number, data: UpdatePatchUserDTO) {
 
-    console.log({data})
+        await this.exists(id)
 
     return this.prisma.user.update({
-        data,
+        data: {
+        ...data,
+        birthAt: data.birthAt ? new Date(data.birthAt) : undefined,
+        },
         where: {
-            id
-        }
-    })
+        id,
+        },
+    });
+}
+
+    async delete(id: number) {
+
+        await this.exists(id)
+
+        return this.prisma.user.delete({
+
+            where: {         
+                id
+            }
+
+        });
 
 }
 
+    async exists(id: number) {
+
+        if (!(await this.prisma.user.count({
+
+            where: {
+                id
+            }
+
+        }))) {
+
+            throw new NotFoundException(`O usuario ${id} nao existe.`)
         
 
+         }
+    }
+ 
 
 }
