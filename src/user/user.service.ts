@@ -45,7 +45,7 @@ async update(id: number, data: UpdatePutUserDTO) {
     return this.prisma.user.update({
         data: {
         ...data,
-        birthAt: data.birthAt ? new Date(data.birthAt) : null,
+        birthAt: data.birthAt ? new Date(data.birthAt) : null, 
         },
         where: {
         id,
