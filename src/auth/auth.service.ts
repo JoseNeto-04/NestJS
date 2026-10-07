@@ -4,6 +4,7 @@ import { User } from "@prisma/client"
 import { PrismaService } from "src/prisma/prisma.service"
 import { UserService } from "src/user/user.service"
 import { AuthRegisterDTO } from "./dto/auth-register.dto"
+import * as bcrypt from "bcrypt"
 
 
 
@@ -27,7 +28,7 @@ export class AuthService {
                 email: user.email
 
              },{
-                expiresIn: "1 day",
+                expiresIn: "5 day",
                 subject: String(user.id),
                 issuer: this.issuer,
                 audience: this.audience,
@@ -73,12 +74,17 @@ export class AuthService {
 
                 where: {
                     email,
-                    password
                 }
             })
             if(!user) {
                 throw new UnauthorizedException('E-mail e/ou senha incorreto.')
             }
+
+           if(!await  bcrypt.compare(password, user.password)) {
+
+                throw new UnauthorizedException('E-mail e/ou senha incorreto.')
+
+           }
 
             return this.createToken(user)
 
