@@ -8,6 +8,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard';
 import { ConfigModule } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter'
+
 
 
 @Module({
@@ -17,8 +20,34 @@ import { ConfigModule } from '@nestjs/config';
     ttl:60,
     limit:100,
   }),
+
   forwardRef(() => UserModule),
-  forwardRef(() =>AuthModule)],
+  forwardRef(() =>AuthModule),
+ MailerModule.forRoot({
+  transport: {
+    host: 'smtp.ethereal.email',
+    port: 587,
+    secure: false,
+    auth: {
+      user: 'margot37@ethereal.email',
+      pass:'SryjHZrR3wbggBx73y',
+    },
+  },
+
+  defaults: {
+    from: '"VonexXTStore" <ellis.kutch85@ethereal.email>',
+  },
+
+    template: {
+      dir: __dirname + '/templates',
+      adapter: new PugAdapter(),
+      options: {
+      strict: true,
+      },
+    },
+  }),
+],
+
   controllers: [AppController],
   providers: [AppService,{
 

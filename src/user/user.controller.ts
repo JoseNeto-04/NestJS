@@ -55,5 +55,5 @@ export class UserController {
   async delete(@ParamId() id: number) {
         return this.userService.delete(id)
      
-  }
+  } 
 }

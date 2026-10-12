@@ -1,5 +1,6 @@
 import { forwardRef, Module }  from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
+import { FileService } from "src/file/file.service";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { UserModule } from "src/user/user.module";
 import { AuthController } from "./auth.controller";
@@ -13,9 +14,10 @@ import { AuthService } from "./auth.service";
         }),
         forwardRef(()=> UserModule),
         PrismaModule,
+
     ],
     controllers: [AuthController],
-    providers: [AuthService],
+    providers: [AuthService, FileService],
     exports: [AuthService]
 })
 

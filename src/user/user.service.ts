@@ -63,21 +63,22 @@ async update(id: number, data: UpdatePutUserDTO) {
     });
 }
 
-async updatePartial(id: number, data: UpdatePatchUserDTO) {
-  await this.exists(id);
+    async updatePartial(id: number, data: UpdatePatchUserDTO) {
 
-  let password: string | undefined;
+        await this.exists(id);
 
-  if (data.password) {
-    const salt = await bcrypt.genSalt();
-    password = await bcrypt.hash(data.password, salt);
+        let password: string | undefined;
+
+        if (data.password) {
+            const salt = await bcrypt.genSalt();
+            password = await bcrypt.hash(data.password, salt);
   }
 
-  return this.prisma.user.update({
-    data: {
-      ...data,
-      password,
-      birthAt: data.birthAt ? new Date(data.birthAt) : undefined,
+    return this.prisma.user.update({
+        data: {
+            ...data,
+            password,
+            birthAt: data.birthAt ? new Date(data.birthAt) : undefined,
     },
     where: {
       id,
